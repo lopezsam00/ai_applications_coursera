@@ -1,0 +1,27 @@
+# Core GenAI Libraries
+openai>=1.3.0
+langchain>=0.1.0
+langchain-openai>=0.0.2
+
+# Additional AI Libraries
+transformers>=4.35.0
+sentence-transformers>=2.2.0
+
+# Data Processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Environment Management
+python-dotenv>=1.0.0
+
+# Web Framework (for API development)
+flask>=3.0.0
+requests>=2.31.0
+
+# Utilities
+pyyaml>=6.0.0
+tqdm>=4.65.0
+
+# Jupyter for notebooks
+jupyter>=1.0.0
+notebook>=7.0.0
