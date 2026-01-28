@@ -18,6 +18,10 @@ python-dotenv>=1.0.0
 flask>=3.0.0
 requests>=2.31.0
 
+ibm-watsonx-ai==1.0.8
+langchain==0.2.11
+langchain-ibm==0.1.7
+langchain-core==0.2.43
 # Utilities
 pyyaml>=6.0.0
 tqdm>=4.65.0

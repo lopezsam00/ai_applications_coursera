@@ -15,6 +15,7 @@ This repository contains practice projects and examples for the **IBM Generative
 
 - Python 3.8 or higher
 - An OpenAI API key ([Get one here](https://platform.openai.com/api-keys))
+- IBM watsonx.ai keys ([Get one here](https://dataplatform.cloud.ibm.com/registration/stepone?context=wx))
 - Basic knowledge of Python
 
 ### 2. Installation
