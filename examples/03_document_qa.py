@@ -7,6 +7,13 @@ This example demonstrates:
 - Using context to answer questions
 """
 
+import sys
+from pathlib import Path
+
+# Add project root to path for imports
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
 from openai import OpenAI
 from utils.config import config
 
