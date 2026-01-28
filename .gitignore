@@ -47,9 +47,15 @@ venv.bak/
 .env.local
 
 # API Keys (security)
-*api_key*
-*secret*
+# Ignore files containing API keys or secrets in their names
+.api_key
+*.api_key
+*_api_key.*
+.secret
+*.secret
+*_secret.*
 credentials.json
+*.credentials.json
 
 # Logs
 *.log

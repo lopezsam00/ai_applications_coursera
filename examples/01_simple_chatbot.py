@@ -16,22 +16,21 @@ sys.path.insert(0, str(project_root))
 
 from openai import OpenAI
 from utils.config import config
+from utils import get_openai_client, handle_api_error
 
 def simple_chatbot():
     """Create a simple chatbot that responds to user input."""
     
-    # Validate configuration
+    # Initialize OpenAI client with validation
     try:
-        config.validate()
+        client = get_openai_client()
     except ValueError as e:
-        print(f"Configuration Error: {e}")
-        print("\nPlease follow these steps:")
+        print(f"❌ Configuration Error: {e}")
+        print("\n📋 Setup Instructions:")
         print("1. Copy .env.template to .env")
         print("2. Add your OpenAI API key to the .env file")
+        print("3. Run the script again")
         return
-    
-    # Initialize OpenAI client
-    client = OpenAI(api_key=config.OPENAI_API_KEY)
     
     print("Simple Chatbot (type 'quit' to exit)")
     print("-" * 50)
@@ -74,8 +73,7 @@ def simple_chatbot():
             print(f"\nAssistant: {assistant_message}")
             
         except Exception as e:
-            print(f"\nError: {e}")
-            print("Please check your API key and internet connection.")
+            handle_api_error(e)
             break
 
 if __name__ == "__main__":

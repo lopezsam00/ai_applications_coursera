@@ -71,7 +71,8 @@ ai_applications_coursera/
 ├── examples/              # Example Python scripts
 │   ├── 01_simple_chatbot.py
 │   ├── 02_text_generation.py
-│   └── 03_document_qa.py
+│   ├── 03_document_qa.py
+│   └── 04_prompt_engineering.py
 ├── notebooks/             # Jupyter notebooks
 │   └── 01_getting_started.ipynb
 ├── utils/                 # Utility functions
@@ -80,6 +81,7 @@ ai_applications_coursera/
 ├── .env.template          # Environment variables template
 ├── .gitignore            # Git ignore rules
 ├── requirements.txt       # Python dependencies
+├── QUICKSTART.md         # Quick start guide
 └── README.md             # This file
 ```
 
