@@ -45,7 +45,6 @@ venv.bak/
 # Environment variables
 .env
 .env.local
-config.py
 
 # API Keys (security)
 *api_key*
