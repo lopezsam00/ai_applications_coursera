@@ -19,8 +19,15 @@ flask>=3.0.0
 requests>=2.31.0
 
 ibm-watsonx-ai==1.0.8
-langchain==0.2.11
+ibm-watson-machine-learning==1.0.367
 langchain-ibm==0.1.7
+langchain-community==0.2.10
+langchain-experimental==0.0.62
+langchainhub==0.1.18
+langchain==0.2.11
+pypdf==4.2.0
+chromadb==0.4.24
+tenacity==8.2.3
 langchain-core==0.2.43
 # Utilities
 pyyaml>=6.0.0
