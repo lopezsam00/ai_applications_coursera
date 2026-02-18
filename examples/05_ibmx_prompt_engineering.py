@@ -10,8 +10,9 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from langchain.chains import LLMChain
 import os
 
+
 def llm_model(prompt_txt, params=None):
-    
+
     model_id = "ibm/granite-3-2-8b-instruct"
 
     default_params = {
@@ -19,7 +20,7 @@ def llm_model(prompt_txt, params=None):
         "min_new_tokens": 0,
         "temperature": 0.5,
         "top_p": 0.2,
-        "top_k": 1
+        "top_k": 1,
     }
 
     if params:
@@ -30,18 +31,15 @@ def llm_model(prompt_txt, params=None):
     api_key = os.getenv("IBM_API_KEY", "")
     project_id = os.getenv("IBM_PROJECT_ID", "")
 
-    credentials = {
-        "url": url,
-        "api_key": api_key
-    }
-    
+    credentials = {"url": url, "api_key": api_key}
+
     # Create LLM directly
     granite_llm = WatsonxLLM(
         model_id=model_id,
         credentials=credentials,
         project_id=project_id,
-        params=default_params
+        params=default_params,
     )
-    
+
     response = granite_llm.invoke(prompt_txt)
     return response

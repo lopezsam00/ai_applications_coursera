@@ -17,6 +17,7 @@ sys.path.insert(0, str(project_root))
 from openai import OpenAI
 from utils.config import config
 
+
 def get_completion(prompt, temperature=0.7):
     """Helper function to get completions."""
     try:
@@ -24,40 +25,41 @@ def get_completion(prompt, temperature=0.7):
     except ValueError as e:
         print(f"Configuration Error: {e}")
         return None
-    
+
     client = OpenAI(api_key=config.OPENAI_API_KEY)
-    
+
     try:
         response = client.chat.completions.create(
             model=config.DEFAULT_MODEL,
             messages=[{"role": "user", "content": prompt}],
-            temperature=temperature
+            temperature=temperature,
         )
         return response.choices[0].message.content
     except Exception as e:
         print(f"Error: {e}")
         return None
 
+
 def demonstrate_prompt_patterns():
     """Demonstrate various prompt engineering patterns."""
-    
+
     print("Prompt Engineering Best Practices")
     print("=" * 70)
-    
+
     # Pattern 1: Clear Instructions
     print("\n1. CLEAR INSTRUCTIONS")
     print("-" * 70)
     print("Bad: Tell me about Python")
     bad_result = get_completion("Tell me about Python")
     print(f"Result: {bad_result}\n")
-    
+
     print("Good: Explain Python programming language in 3 bullet points")
     good_result = get_completion(
         "Explain Python programming language in 3 bullet points, "
         "focusing on its main advantages for beginners."
     )
     print(f"Result: {good_result}")
-    
+
     # Pattern 2: Provide Context
     print("\n2. PROVIDE CONTEXT")
     print("-" * 70)
@@ -73,7 +75,7 @@ def demonstrate_prompt_patterns():
     """
     result = get_completion(context_prompt, temperature=0.3)
     print(f"Result: {result}")
-    
+
     # Pattern 3: Few-Shot Learning
     print("\n3. FEW-SHOT LEARNING (Learning from Examples)")
     print("-" * 70)
@@ -94,7 +96,7 @@ def demonstrate_prompt_patterns():
     """
     result = get_completion(few_shot_prompt, temperature=0.3)
     print(f"Result: {result}")
-    
+
     # Pattern 4: Chain of Thought
     print("\n4. CHAIN OF THOUGHT (Step-by-Step Reasoning)")
     print("-" * 70)
@@ -107,7 +109,7 @@ def demonstrate_prompt_patterns():
     """
     result = get_completion(cot_prompt, temperature=0.2)
     print(f"Result: {result}")
-    
+
     # Pattern 5: Role Assignment
     print("\n5. ROLE ASSIGNMENT")
     print("-" * 70)
@@ -128,7 +130,7 @@ def demonstrate_prompt_patterns():
     """
     result = get_completion(role_prompt, temperature=0.4)
     print(f"Result: {result}")
-    
+
     # Pattern 6: Output Format Specification
     print("\n6. OUTPUT FORMAT SPECIFICATION")
     print("-" * 70)
@@ -145,7 +147,7 @@ def demonstrate_prompt_patterns():
     """
     result = get_completion(format_prompt, temperature=0.3)
     print(f"Result: {result}")
-    
+
     # Pattern 7: Constraints and Limitations
     print("\n7. CONSTRAINTS AND LIMITATIONS")
     print("-" * 70)
@@ -162,40 +164,42 @@ def demonstrate_prompt_patterns():
     print(f"Result: {result}")
     print(f"Word count: {len(result.split())}")
 
+
 def demonstrate_common_mistakes():
     """Show common prompting mistakes and how to fix them."""
-    
+
     print("\n" + "=" * 70)
     print("COMMON MISTAKES TO AVOID")
     print("=" * 70)
-    
+
     mistakes = [
         {
             "mistake": "Being too vague",
             "bad": "Write something about AI",
-            "good": "Write a 100-word introduction to AI for a high school student"
+            "good": "Write a 100-word introduction to AI for a high school student",
         },
         {
             "mistake": "Multiple unrelated tasks",
             "bad": "Explain AI, write a poem, and calculate 23 * 45",
-            "good": "Focus on one task at a time for better results"
+            "good": "Focus on one task at a time for better results",
         },
         {
             "mistake": "Assuming too much knowledge",
             "bad": "Implement a transformer model",
-            "good": "Explain what a transformer model is and provide a simple Python example"
-        }
+            "good": "Explain what a transformer model is and provide a simple Python example",
+        },
     ]
-    
+
     for i, item in enumerate(mistakes, 1):
         print(f"\nMistake {i}: {item['mistake']}")
         print(f"Bad: {item['bad']}")
         print(f"Good: {item['good']}")
 
+
 if __name__ == "__main__":
     demonstrate_prompt_patterns()
     demonstrate_common_mistakes()
-    
+
     print("\n" + "=" * 70)
     print("\nKey Takeaways:")
     print("1. Be specific and clear in your instructions")
