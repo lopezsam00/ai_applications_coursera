@@ -32,6 +32,7 @@ langchain-core==0.2.43
 # Utilities
 pyyaml>=6.0.0
 tqdm>=4.65.0
+sentence-transformers==4.1.0
 
 # Jupyter for notebooks
 jupyter>=1.0.0
