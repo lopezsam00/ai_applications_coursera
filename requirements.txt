@@ -10,6 +10,7 @@ sentence-transformers>=2.2.0
 # Data Processing
 pandas>=2.0.0
 numpy>=1.24.0
+scipy==1.16.0
 
 # Environment Management
 python-dotenv>=1.0.0
