@@ -13,13 +13,15 @@ class Config:
     """Configuration class for managing API keys and settings."""
 
     # OpenAI Configuration
-    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+    OPENAI_API_KEY = os.getenv("IBM_API_KEY", "")
     OPENAI_ORG_ID = os.getenv("OPENAI_ORG_ID", "")
 
     # Model Configuration
     DEFAULT_MODEL = os.getenv("DEFAULT_MODEL", "gpt-3.5-turbo")
     TEMPERATURE = float(os.getenv("TEMPERATURE", "0.7"))
     MAX_TOKENS = int(os.getenv("MAX_TOKENS", "500"))
+    WATSON_URL = os.getenv("IBM_URL_END_POINT")
+    PROJECT_ID = os.getenv("IBM_PROJECT_ID")
 
     # Application Configuration
     DEBUG = os.getenv("DEBUG", "True").lower() == "true"
