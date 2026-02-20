@@ -6,7 +6,7 @@ from utils.config import config
 
 food_items = []
 
-model_id = 'ibm/granite-3-3-8b-instruct'
+model_id = "ibm/granite-3-3-8b-instruct"
 gen_parms = {"max_new_tokens": 400}
 
 space_id = None
@@ -15,18 +15,13 @@ verify = None
 url = config.WATSON_URL
 apikey = config.OPENAI_API_KEY
 project_id = config.PROJECT_ID
-credentials = {
-    "url": url,
-    "apikey": apikey
-}
+credentials = {"url": url, "apikey": apikey}
 
 
 model = ModelInference(
-    model_id=model_id,
-    params=gen_parms,
-    credentials=credentials,
-    project_id=project_id
+    model_id=model_id, params=gen_parms, credentials=credentials, project_id=project_id
 )
+
 
 def main():
     """Main function for enhanced RAG chatbot system"""
@@ -35,12 +30,12 @@ def main():
         print("   Powered by IBM Granite & ChromaDB")
         print("=" * 55)
         global food_items
-        food_items = load_food_data('files/FoodDataSet.json')
+        food_items = load_food_data("files/FoodDataSet.json")
         print(f"✅ Loaded {len(food_items)} food items")
 
         collection = create_similarity_search_collection(
             "enhanced_rag_food_chatbot",
-            {'description': 'Enhanced RAG chatbot with IBM watsonx.ai integration'}
+            {"description": "Enhanced RAG chatbot with IBM watsonx.ai integration"},
         )
         populate_similarity_collection(collection, food_items)
         print("✅ Vector database ready")
@@ -53,60 +48,72 @@ def main():
         else:
             print("❌ LLM connection failed")
             return
-        
+
         # Start enhanced RAG chatbot
         enhanced_rag_food_chatbot(collection)
-        
+
     except Exception as error:
         print(f"❌ Error: {error}")
+
 
 def prepare_context_for_llm(query: str, search_results: List[Dict]) -> str:
     """Prepare structured context from search results for LLM"""
     if not search_results:
         return "No relevant food items found in the database."
-    
+
     context_parts = []
-    context_parts.append("Based on your query, here are the most relevant food options from our database:")
+    context_parts.append(
+        "Based on your query, here are the most relevant food options from our database:"
+    )
     context_parts.append("")
-    
+
     for i, result in enumerate(search_results[:3], 1):
         food_context = []
         food_context.append(f"Option {i}: {result['food_name']}")
         food_context.append(f"  - Description: {result['food_description']}")
         food_context.append(f"  - Cuisine: {result['cuisine_type']}")
-        food_context.append(f"  - Calories: {result['food_calories_per_serving']} per serving")
-        
-        if result.get('food_ingredients'):
-            ingredients = result['food_ingredients']
+        food_context.append(
+            f"  - Calories: {result['food_calories_per_serving']} per serving"
+        )
+
+        if result.get("food_ingredients"):
+            ingredients = result["food_ingredients"]
             if isinstance(ingredients, list):
-                food_context.append(f"  - Key ingredients: {', '.join(ingredients[:5])}")
+                food_context.append(
+                    f"  - Key ingredients: {', '.join(ingredients[:5])}"
+                )
             else:
                 food_context.append(f"  - Key ingredients: {ingredients}")
-        
-        if result.get('food_health_benefits'):
-            food_context.append(f"  - Health benefits: {result['food_health_benefits']}")
-        
-        if result.get('cooking_method'):
+
+        if result.get("food_health_benefits"):
+            food_context.append(
+                f"  - Health benefits: {result['food_health_benefits']}"
+            )
+
+        if result.get("cooking_method"):
             food_context.append(f"  - Cooking method: {result['cooking_method']}")
-        
-        if result.get('taste_profile'):
+
+        if result.get("taste_profile"):
             food_context.append(f"  - Taste profile: {result['taste_profile']}")
-        
-        food_context.append(f"  - Similarity score: {result['similarity_score']*100:.1f}%")
+
+        food_context.append(
+            f"  - Similarity score: {result['similarity_score']*100:.1f}%"
+        )
         food_context.append("")
-        
+
         context_parts.extend(food_context)
-    
+
     return "\n".join(context_parts)
+
 
 def generate_llm_rag_response(query: str, search_results: List[Dict]) -> str:
     """Generate response using IBM Granite with retrieved context"""
     try:
         # Prepare context from search results
         context = prepare_context_for_llm(query, search_results)
-        
+
         # Build the prompt for the LLM
-        prompt = f'''You are a helpful food recommendation assistant. A user is asking for food recommendations, and I've retrieved relevant options from a food database.
+        prompt = f"""You are a helpful food recommendation assistant. A user is asking for food recommendations, and I've retrieved relevant options from a food database.
 
 User Query: "{query}"
 
@@ -121,53 +128,61 @@ Please provide a helpful, short response that:
 5. Uses a friendly, conversational tone
 6. Keeps the response concise but informative
 
-Response:'''
+Response:"""
 
         # Generate response using IBM Granite
         generated_response = model.generate(prompt=prompt, params=None)
-        
+
         # Extract the generated text
         if generated_response and "results" in generated_response:
             response_text = generated_response["results"][0]["generated_text"]
-            
+
             # Clean up the response if needed
             response_text = response_text.strip()
-            
+
             # If response is too short, provide a fallback
             if len(response_text) < 50:
                 return generate_fallback_response(query, search_results)
-            
+
             return response_text
         else:
             return generate_fallback_response(query, search_results)
-            
+
     except Exception as e:
         print(f"❌ LLM Error: {e}")
         return generate_fallback_response(query, search_results)
+
 
 def generate_fallback_response(query: str, search_results: List[Dict]) -> str:
     """Generate fallback response when LLM fails"""
     if not search_results:
         return "I couldn't find any food items matching your request. Try describing what you're in the mood for with different words!"
-    
+
     top_result = search_results[0]
     response_parts = []
-    
-    response_parts.append(f"Based on your request for '{query}', I'd recommend {top_result['food_name']}.")
-    response_parts.append(f"It's a {top_result['cuisine_type']} dish with {top_result['food_calories_per_serving']} calories per serving.")
-    
+
+    response_parts.append(
+        f"Based on your request for '{query}', I'd recommend {top_result['food_name']}."
+    )
+    response_parts.append(
+        f"It's a {top_result['cuisine_type']} dish with {top_result['food_calories_per_serving']} calories per serving."
+    )
+
     if len(search_results) > 1:
         second_choice = search_results[1]
-        response_parts.append(f"Another great option would be {second_choice['food_name']}.")
-    
+        response_parts.append(
+            f"Another great option would be {second_choice['food_name']}."
+        )
+
     return " ".join(response_parts)
+
 
 def enhanced_rag_food_chatbot(collection):
     """Enhanced RAG-powered conversational food chatbot with IBM Granite"""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("🤖 ENHANCED RAG FOOD RECOMMENDATION CHATBOT")
     print("   Powered by IBM's Granite Model")
-    print("="*70)
+    print("=" * 70)
     print("💬 Ask me about food recommendations using natural language!")
     print("\nExample queries:")
     print("  • 'I want something spicy and healthy for dinner'")
@@ -179,115 +194,132 @@ def enhanced_rag_food_chatbot(collection):
     print("  • 'compare' - Compare recommendations for two different queries")
     print("  • 'quit' - Exit the chatbot")
     print("-" * 70)
-    
+
     conversation_history = []
-    
+
     while True:
         try:
             user_input = input("\n👤 You: ").strip()
-            
+
             if not user_input:
                 print("🤖 Bot: Please tell me what kind of food you're looking for!")
                 continue
-            
-            if user_input.lower() in ['quit', 'exit', 'q']:
+
+            if user_input.lower() in ["quit", "exit", "q"]:
                 print("\n🤖 Bot: Thank you for using the Enhanced RAG Food Chatbot!")
                 print("      Hope you found some delicious recommendations! 👋")
                 break
-            
-            elif user_input.lower() in ['help', 'h']:
+
+            elif user_input.lower() in ["help", "h"]:
                 show_enhanced_rag_help()
-            
-            elif user_input.lower() in ['compare']:
+
+            elif user_input.lower() in ["compare"]:
                 handle_enhanced_comparison_mode(collection)
-            
+
             else:
                 # Process the food query with enhanced RAG
                 handle_enhanced_rag_query(collection, user_input, conversation_history)
                 conversation_history.append(user_input)
-                
+
                 # Keep conversation history manageable
                 if len(conversation_history) > 5:
                     conversation_history = conversation_history[-3:]
-                
+
         except KeyboardInterrupt:
             print("\n\n🤖 Bot: Goodbye! Hope you find something delicious! 👋")
             break
         except Exception as e:
             print(f"❌ Bot: Sorry, I encountered an error: {e}")
 
+
 def handle_enhanced_rag_query(collection, query: str, conversation_history: List[str]):
     """Handle user query with enhanced RAG approach using IBM Granite"""
     print(f"\n🔍 Searching vector database for: '{query}'...")
-    
+
     # Perform similarity search with more results for better context
     search_results = perform_similarity_search(collection, query, 3)
-    
+
     if not search_results:
         print("🤖 Bot: I couldn't find any food items matching your request.")
         print("      Try describing what you're in the mood for with different words!")
         return
-    
+
     print(f"✅ Found {len(search_results)} relevant matches")
     print("🧠 Generating AI-powered response...")
-    
+
     # Generate enhanced RAG response using IBM Granite
     ai_response = generate_llm_rag_response(query, search_results)
-    
+
     print(f"\n🤖 Bot: {ai_response}")
-    
+
     # Show detailed results for reference
     print(f"\n📊 Search Results Details:")
     print("-" * 45)
     for i, result in enumerate(search_results[:3], 1):
         print(f"{i}. 🍽️  {result['food_name']}")
-        print(f"   📍 {result['cuisine_type']} | 🔥 {result['food_calories_per_serving']} cal | 📈 {result['similarity_score']*100:.1f}% match")
+        print(
+            f"   📍 {result['cuisine_type']} | 🔥 {result['food_calories_per_serving']} cal | 📈 {result['similarity_score']*100:.1f}% match"
+        )
         if i < 3:
             print()
+
 
 def handle_enhanced_comparison_mode(collection):
     """Enhanced comparison between two food queries using LLM"""
     print("\n🔄 ENHANCED COMPARISON MODE")
     print("   Powered by AI Analysis")
     print("-" * 35)
-    
+
     query1 = input("Enter first food query: ").strip()
     query2 = input("Enter second food query: ").strip()
-    
+
     if not query1 or not query2:
         print("❌ Please enter both queries for comparison")
         return
-    
+
     print(f"\n🔍 Analyzing '{query1}' vs '{query2}' with AI...")
-    
+
     # Get results for both queries
     results1 = perform_similarity_search(collection, query1, 3)
     results2 = perform_similarity_search(collection, query2, 3)
-    
+
     # Generate AI-powered comparison
     comparison_response = generate_llm_comparison(query1, query2, results1, results2)
-    
+
     print(f"\n🤖 AI Analysis: {comparison_response}")
-    
+
     # Show side-by-side results
     print(f"\n📊 DETAILED COMPARISON")
     print("=" * 60)
-    print(f"{'Query 1: ' + query1[:20] + '...' if len(query1) > 20 else 'Query 1: ' + query1:<30} | {'Query 2: ' + query2[:20] + '...' if len(query2) > 20 else 'Query 2: ' + query2}")
+    print(
+        f"{'Query 1: ' + query1[:20] + '...' if len(query1) > 20 else 'Query 1: ' + query1:<30} | {'Query 2: ' + query2[:20] + '...' if len(query2) > 20 else 'Query 2: ' + query2}"
+    )
     print("-" * 60)
-    
+
     max_results = max(len(results1), len(results2))
     for i in range(min(max_results, 3)):
-        left = f"{results1[i]['food_name']} ({results1[i]['similarity_score']*100:.0f}%)" if i < len(results1) else "---"
-        right = f"{results2[i]['food_name']} ({results2[i]['similarity_score']*100:.0f}%)" if i < len(results2) else "---"
+        left = (
+            f"{results1[i]['food_name']} ({results1[i]['similarity_score']*100:.0f}%)"
+            if i < len(results1)
+            else "---"
+        )
+        right = (
+            f"{results2[i]['food_name']} ({results2[i]['similarity_score']*100:.0f}%)"
+            if i < len(results2)
+            else "---"
+        )
         print(f"{left[:30]:<30} | {right[:30]}")
 
-def generate_llm_comparison(query1: str, query2: str, results1: List[Dict], results2: List[Dict]) -> str:
+
+def generate_llm_comparison(
+    query1: str, query2: str, results1: List[Dict], results2: List[Dict]
+) -> str:
     """Generate AI-powered comparison between two queries"""
     try:
         context1 = prepare_context_for_llm(query1, results1[:3])
         context2 = prepare_context_for_llm(query2, results2[:3])
-        
-        comparison_prompt = f'''You are analyzing and comparing two different food preference queries. Please provide a thoughtful comparison.
+
+        comparison_prompt = f"""You are analyzing and comparing two different food preference queries. Please provide a thoughtful comparison.
 
 Query 1: "{query1}"
 Top Results for Query 1:
@@ -304,19 +336,22 @@ Please provide a short comparison that:
 4. Recommends the best option from each query
 5. Keeps the analysis concise but insightful
 
-Comparison:'''
+Comparison:"""
 
         generated_response = model.generate(prompt=comparison_prompt, params=None)
-        
+
         if generated_response and "results" in generated_response:
             return generated_response["results"][0]["generated_text"].strip()
         else:
             return generate_simple_comparison(query1, query2, results1, results2)
-            
+
     except Exception as e:
         return generate_simple_comparison(query1, query2, results1, results2)
 
-def generate_simple_comparison(query1: str, query2: str, results1: List[Dict], results2: List[Dict]) -> str:
+
+def generate_simple_comparison(
+    query1: str, query2: str, results1: List[Dict], results2: List[Dict]
+) -> str:
     """Simple comparison fallback"""
     if not results1 and not results2:
         return "No results found for either query."
@@ -324,8 +359,9 @@ def generate_simple_comparison(query1: str, query2: str, results1: List[Dict], r
         return f"Found results for '{query2}' but none for '{query1}'."
     if not results2:
         return f"Found results for '{query1}' but none for '{query2}'."
-    
+
     return f"For '{query1}', I recommend {results1[0]['food_name']}. For '{query2}', {results2[0]['food_name']} would be perfect."
+
 
 def show_enhanced_rag_help():
     """Display help information for enhanced RAG chatbot"""
@@ -352,6 +388,7 @@ def show_enhanced_rag_help():
     print("  • Mention dietary restrictions or preferences")
     print("  • Include meal timing (breakfast, lunch, dinner)")
     print("  • Specify if you want healthy, comfort, or indulgent options")
+
 
 if __name__ == "__main__":
     main()
