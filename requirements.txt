@@ -29,7 +29,9 @@ langchain==0.2.11
 pypdf==4.2.0
 chromadb==1.0.12
 tenacity==8.2.3
+lark==1.2.2
 langchain-core==0.2.43
+posthog<6.0.0
 # Utilities
 pyyaml>=6.0.0
 tqdm>=4.65.0
