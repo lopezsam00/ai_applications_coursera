@@ -55,10 +55,19 @@
 # pydantic==2.9.1
 # huggingface_hub==0.23.0
 # llama-index==0.12.49
-llama-index-embeddings-huggingface==0.5.5
-llama-index-llms-ibm==0.4.0
-llama-index-retrievers-bm25==0.5.2
-sentence-transformers==5.0.0
-rank-bm25==0.2.2
-PyStemmer==2.2.0.3
-ibm-watsonx-ai==1.3.31
+
+#requirements for 07_advanced
+# llama-index-embeddings-huggingface==0.5.5
+# llama-index-llms-ibm==0.4.0
+# llama-index-retrievers-bm25==0.5.2
+# sentence-transformers==5.0.0
+# rank-bm25==0.2.2
+# PyStemmer==2.2.0.3
+# ibm-watsonx-ai==1.3.31
+
+# requirements for 08_Faiss_melvin
+faiss-cpu
+numpy
+scikit-learn
+tensorflow>=2.0.0
+tensorflow-hub
