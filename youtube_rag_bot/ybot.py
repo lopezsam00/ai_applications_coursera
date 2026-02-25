@@ -35,7 +35,9 @@ from langchain_community.vectorstores import (
 )  # For efficient vector storage and similarity search
 from langchain.chains import LLMChain  # For creating chains of operations with LLMs
 from langchain.prompts import PromptTemplate  # For defining prompt templates
-from utils.config import config
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 
 def get_video_id(url):
@@ -102,15 +104,18 @@ def chunk_transcript(processed_transcript, chunk_size=200, chunk_overlap=20):
 def setup_credentials():
     # Define the model ID for the WatsonX model being used
     model_id = "ibm/granite-3-2-8b-instruct"
+    url = os.getenv("IBM_URL_END_POINT")
+    apikey = os.getenv("IBM_API_KEY")
+    project_id = os.getenv("IBM_PROJECT_ID")
 
     # Set up the credentials by specifying the URL for IBM Watson services
-    credentials = Credentials(url=config.WATSON_URL, api_key=config.OPENAI_API_KEY)
+    credentials = Credentials(url=url)
 
     # Create an API client using the credentials
     client = APIClient(credentials)
 
     # Define the project ID associated with the WatsonX platform
-    project_id = config.PROJECT_ID
+    project_id = project_id
 
     # Return the model ID, credentials, client, and project ID for later use
     return model_id, credentials, client, project_id
@@ -183,15 +188,15 @@ def create_summary_prompt():
     template = """
     <|begin_of_text|><|start_header_id|>system<|end_header_id|>
     You are an AI assistant tasked with summarizing YouTube video transcripts. Provide concise, informative summaries that capture the main points of the video content.
-
+ 
     Instructions:
     1. Summarize the transcript in a single concise paragraph.
     2. Ignore any timestamps in your summary.
     3. Focus on the spoken content (Text) of the video.
-
+ 
     Note: In the transcript, "Text" refers to the spoken words in the video, and "start" indicates the timestamp when that part begins in the video.<|eot_id|><|start_header_id|>user<|end_header_id|>
     Please summarize the following YouTube video transcript:
-
+ 
     {transcript}<|eot_id|><|start_header_id|>assistant<|end_header_id|>
     """
 
@@ -229,32 +234,33 @@ def retrieve(query, faiss_index, k=7):
     return relevant_context
 
 
-from langchain import PromptTemplate
-
-
 def create_qa_prompt_template():
     """
     Create a PromptTemplate for question answering based on video content.
-
     Returns:
         PromptTemplate: A PromptTemplate object configured for Q&A tasks.
     """
 
     # Define the template string
     qa_template = """
-    You are an expert assistant providing detailed answers based on the following video content.
-
+    <|begin_of_text|><|start_header_id|>system<|end_header_id|>
+    You are an expert assistant providing detailed and accurate answers based on the following video content. Your responses should be:
+    1. Precise and free from repetition
+    2. Consistent with the information provided in the video
+    3. Well-organized and easy to understand
+    4. Focused on addressing the user's question directly
+    If you encounter conflicting information in the video content, use your best judgment to provide the most likely correct answer based on context.
+    Note: In the transcript, "Text" refers to the spoken words in the video, and "start" indicates the timestamp when that part begins in the video.<|eot_id|>
+ 
+    <|start_header_id|>user<|end_header_id|>
     Relevant Video Context: {context}
-
     Based on the above context, please answer the following question:
-    Question: {question}
+    {question}<|eot_id|><|start_header_id|>assistant<|end_header_id|>
     """
-
     # Create the PromptTemplate object
     prompt_template = PromptTemplate(
         input_variables=["context", "question"], template=qa_template
     )
-
     return prompt_template
 
 
@@ -350,12 +356,13 @@ def summarize_video(video_url):
     else:
         return "No transcript available. Please fetch the transcript first."
 
+
 def answer_question(video_url, user_question):
     """
     Title: Answer User's Question
 
     Description:
-    This function retrieves relevant context from the FAISS index based on the user’s query 
+    This function retrieves relevant context from the FAISS index based on the user’s query
     and generates an answer using the preprocessed transcript.
     If the transcript hasn't been fetched yet, it fetches it first.
 
@@ -364,7 +371,7 @@ def answer_question(video_url, user_question):
         user_question (str): The question posed by the user regarding the video.
 
     Returns:
-        str: The answer to the user's question or a message indicating that the transcript 
+        str: The answer to the user's question or a message indicating that the transcript
              has not been fetched.
     """
     global fetched_transcript, processed_transcript
@@ -386,7 +393,9 @@ def answer_question(video_url, user_question):
         model_id, credentials, client, project_id = setup_credentials()
 
         # Step 3: Initialize WatsonX LLM for Q&A
-        llm = initialize_watsonx_llm(model_id, credentials, project_id, define_parameters())
+        llm = initialize_watsonx_llm(
+            model_id, credentials, project_id, define_parameters()
+        )
 
         # Step 4: Create FAISS index for transcript chunks (only needed for Q&A)
         embedding_model = setup_embedding_model(credentials, project_id)
@@ -402,13 +411,21 @@ def answer_question(video_url, user_question):
     else:
         return "Please provide a valid question and ensure the transcript has been fetched."
 
+
 with gr.Blocks() as interface:
+
+    gr.Markdown("<h2 style='text-align: center;'>YouTube Video Summarizer and Q&A</h2>")
+
     # Input field for YouTube URL
-    video_url = gr.Textbox(label="YouTube Video URL", placeholder="Enter the YouTube Video URL")
-    
+    video_url = gr.Textbox(
+        label="YouTube Video URL", placeholder="Enter the YouTube Video URL"
+    )
+
     # Outputs for summary and answer
     summary_output = gr.Textbox(label="Video Summary", lines=5)
-    question_input = gr.Textbox(label="Ask a Question About the Video", placeholder="Ask your question")
+    question_input = gr.Textbox(
+        label="Ask a Question About the Video", placeholder="Ask your question"
+    )
     answer_output = gr.Textbox(label="Answer to Your Question", lines=5)
 
     # Buttons for selecting functionalities after fetching transcript
@@ -420,7 +437,9 @@ with gr.Blocks() as interface:
 
     # Set up button actions
     summarize_btn.click(summarize_video, inputs=video_url, outputs=summary_output)
-    question_btn.click(answer_question, inputs=[video_url, question_input], outputs=answer_output)
+    question_btn.click(
+        answer_question, inputs=[video_url, question_input], outputs=answer_output
+    )
 
 # Launch the app with specified server name and port
 interface.launch(server_name="0.0.0.0", server_port=7860)
