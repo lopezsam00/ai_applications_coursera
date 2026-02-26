@@ -109,10 +109,10 @@ def setup_credentials():
     project_id = os.getenv("IBM_PROJECT_ID")
 
     # Set up the credentials by specifying the URL for IBM Watson services
-    credentials = Credentials(url=url)
+    credentials = {"url": url, "api_key": apikey}
 
     # Create an API client using the credentials
-    client = APIClient(credentials)
+    client = APIClient({'url': "https://us-south.ml.cloud.ibm.com", "api_key": apikey})
 
     # Define the project ID associated with the WatsonX platform
     project_id = project_id
@@ -136,6 +136,7 @@ def initialize_watsonx_llm(model_id, credentials, project_id, parameters):
     return WatsonxLLM(
         model_id=model_id,  # Set the model ID for the LLM
         url=credentials.get("url"),  # Retrieve the service URL from credentials
+        apikey=credentials.get("api_key"),  # Retrieve the API key from credentials
         project_id=project_id,  # Set the project ID for accessing resources
         params=parameters,  # Pass the parameters for model behavior
     )
@@ -145,9 +146,8 @@ def setup_embedding_model(credentials, project_id):
     # Create and return an instance of WatsonxEmbeddings with the specified configuration
     return WatsonxEmbeddings(
         model_id="ibm/slate-30m-english-rtrvr-v2",  # Set the model ID for the SLATE-30M embedding model
-        url=credentials[
-            "url"
-        ],  # Retrieve the service URL from the provided credentials
+        url=credentials.get("url"),
+        apikey=credentials.get("api_key"),
         project_id=project_id,  # Set the project ID for accessing resources in the Watson environment
     )
 
