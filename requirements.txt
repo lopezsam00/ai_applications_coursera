@@ -73,11 +73,15 @@
 # tensorflow-hub
 
 # requirements for youtube rag bot
-youtube-transcript-api==1.2.1
-faiss-cpu==1.8.0
-langchain==0.2.6
-langchain-community==0.2.6
-ibm-watsonx-ai>=1.1.24
-langchain_ibm==0.1.8
-gradio==4.44.1
-huggingface_hub
+# youtube-transcript-api==1.2.1
+# faiss-cpu==1.8.0
+# langchain==0.2.6
+# langchain-community==0.2.6
+# ibm-watsonx-ai>=1.1.24
+# langchain_ibm==0.1.8
+# gradio==4.44.1
+# huggingface_hub
+
+# requirements for text_to_speech
+gTTS==2.5.4
+ibm-watsonx-ai==1.1.20
