@@ -82,6 +82,17 @@
 # gradio==4.44.1
 # huggingface_hub
 
-# requirements for text_to_speech
-gTTS==2.5.4
-ibm-watsonx-ai==1.1.20
+# requirements for 09_text_to_speech
+# gTTS==2.5.4
+# ibm-watsonx-ai==1.1.20
+
+# speech to text
+# installing required libraries in my_env
+transformers==4.35.2
+torch==2.2.0
+gradio==5.9.0
+langchain==0.3.12
+langchain-community==0.3.12
+langchain_ibm==0.3.5
+ibm-watsonx-ai==1.1.16
+pydantic==2.10.3
